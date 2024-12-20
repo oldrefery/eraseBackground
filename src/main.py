@@ -13,7 +13,7 @@ from progress import ProgressTracker
 from timing import timing_stats
 
 
-def main(input_video_path, output_dir):
+def main(input_video_path, output_dir, frames_from_one_sec):
     progress = ProgressTracker(output_dir)
 
     try:
@@ -23,7 +23,7 @@ def main(input_video_path, output_dir):
             progress.mark_started('extract_frames')
             images_dir = os.path.join(output_dir, 'images')
             os.makedirs(images_dir, exist_ok=True)
-            extract_frames_from_video(input_video_path, images_dir)
+            extract_frames_from_video(input_video_path, images_dir, frames_from_one_sec)
             progress.mark_completed('extract_frames')
         else:
             print("Step 1: Extracting frames from video... [Completed]")
@@ -73,6 +73,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='3D Model Reconstruction from Video')
     parser.add_argument('--input_video', type=str, required=True, help='Path to input video file')
     parser.add_argument('--output_dir', type=str, required=True, help='Directory to save outputs')
+    parser.add_argument('--frames_from_one_sec', type=int, default=1, help='Number of frames to extract from one second of video')
     args = parser.parse_args()
 
-    main(args.input_video, args.output_dir)
+    main(args.input_video, args.output_dir, args.frames_from_one_sec)

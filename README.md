@@ -2,23 +2,13 @@
 
 ## with erasing background to improve the model
 
-Running in a docker container
+videofile should be placed in the directory data/input
 
-#### Create 'erase-background' image
-```
-docker build -t erase-background .
-```
+run process:
+./run.sh <name_videofile> [<frames_from_sec>]
 
-run project in the docker container
-```
-docker run --rm -it \
-    -v "$(pwd)/data/input:/app/data/input" \
-    -v "$(pwd)/data/output:/app/data/output" \
-    erase-background \
-    --input_video /app/data/input/IMG_0558.MOV \
-    --output_dir /app/data/output
-
-```
+name_videofile - name of videofile without path (places in data/input)
+frames_from_sec - extra parameter. How many images from 1 sec of the video should be extracted. Default value is 1.
 
 
 Models 

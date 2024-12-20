@@ -1,5 +1,4 @@
 # src/utils.py
-FRAMES_FROM_ONE_SEC = 3
 SHOW_DEBUG_INFO = False
 
 import cv2
@@ -8,19 +7,31 @@ import os
 import time
 from sys import stdout
 from timing import timing_decorator, get_estimated_time
+import logging
 
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # frame_rate = how much images take from 1 sec
 @timing_decorator
-def extract_frames_from_video(video_path, output_dir, frame_rate=FRAMES_FROM_ONE_SEC):
+def extract_frames_from_video(video_path, output_dir, frame_rate):
     """
     Extract frames from video at a specified frame rate.
+    frame_rate: Number of frames to extract per second of video.
     Shows progress and estimated time remaining.
     """
+
+    logging.info(f"Extracting frames from video: {video_path}")
+    # Simulate extracting frames
+    if not os.path.exists(video_path):
+        logging.error(f"Video file not found: {video_path}")
+        return
+
     vidcap = cv2.VideoCapture(video_path)
     success, image = vidcap.read()
     count = 0
     fps = vidcap.get(cv2.CAP_PROP_FPS)
+    fps = int(round(fps,0))
     total_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
     interval = int(fps / frame_rate)
     start_time = time.time()
@@ -48,6 +59,7 @@ def extract_frames_from_video(video_path, output_dir, frame_rate=FRAMES_FROM_ONE
     
     vidcap.release()
     print("\nFrame extraction completed!")
+    logging.info("Frame extraction completed.")
 
 
 @timing_decorator
@@ -59,6 +71,10 @@ def preprocess_images(input_dir, output_dir):
     # Load pre-trained Mask R-CNN model and configuration
     model_weights = '/app/models/frozen_inference_graph.pb'
     model_config = '/app/models/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt'
+
+    if not os.path.exists(model_weights) or not os.path.exists(model_config):
+        raise FileNotFoundError("Model weights or config file not found!")
+
     net = cv2.dnn.readNetFromTensorflow(model_weights, model_config)
 
     if net.empty():
